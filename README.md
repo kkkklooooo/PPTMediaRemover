@@ -17,9 +17,10 @@ Installation
 
 ```bash
 pip install -r requirements.txt
-Usage
-Command Line Arguments
 ```
+## Usage
+### Command Line Arguments
+
 运行 python PPTrm.py 并传入以下参数：
 ```
 usage: PPTrm.py [-h] [-p PATH] [-k KEY [KEY ...]] [-c]
