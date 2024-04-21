@@ -20,9 +20,9 @@ pip install -r requirements.txt
 Usage
 Command Line Arguments
 ```
-运行 python ppt_media_remover.py 并传入以下参数：
+运行 python PPTrm.py 并传入以下参数：
 ```
-usage: ppt_media_remover.py [-h] [-p PATH] [-k KEY [KEY ...]] [-c]
+usage: PPTrm.py [-h] [-p PATH] [-k KEY [KEY ...]] [-c]
 
 PPT Media Remover. Reduce the size of ppt file
 
@@ -40,10 +40,10 @@ optional arguments:
 示例
 处理单个 PPT 文件
 ```bash
-python ppt_media_remover.py -p path/to/some_presentation.pptx
+python PPTrm.py -p path/to/some_presentation.pptx
 ```
 处理目录中的所有 PPT 文件
 ```bash
-python ppt_media_remover.py -p path/to/presentations_folder -c
+python PPTrm.py -p path/to/presentations_folder -c
 ```
 在这个例子中，脚本将遍历 presentations_folder 目录及其子目录，对所有 PPT 文件进行处理，并且压缩而非删除指定媒体文件。
