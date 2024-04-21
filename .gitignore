@@ -1,0 +1,9 @@
+# Ignore build directories
+build/
+dist/
+
+# Ignore test output directories
+test/
+
+# Ignore specific named output directory
+OUT/
