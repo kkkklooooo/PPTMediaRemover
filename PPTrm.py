@@ -1,5 +1,5 @@
-import zipfile,tempfile
-import numpy as np
+import pyzipper,tempfile
+
 import re,os,argparse
 from colorama import init,Fore,Back,Style
 import shutil,subprocess
@@ -37,7 +37,7 @@ def Debug(str):
 
 input=input("Press Enter to continue>>")
 #key=['.mp4',".wmv"]
-key=args.key.split()
+key=args.key if type(args.key)==list else args.key.split()
 key_f=r""
 for i in key:
     key_f+=(f"{i}|")
@@ -59,12 +59,34 @@ def MultiProcess(path):
         Process(file_full,O_dir,o_name,tpf)
         
 
+
+
 def Process(path,O_dir,o_name,tpf):
     try :
-        f=zipfile.ZipFile(path,"r")
-    except:
-        print(Fore.YELLOW+Style.BRIGHT+f"[Warning] {o_name} is not a PPT file,Skip...")
+#        f=zipfile.ZipFile(path,"r")
+        with pyzipper.AESZipFile(path,"r") as origin_PPT,pyzipper.AESZipFile(f"{O_dir}\\Processed_{o_name}.temp","w",compression=pyzipper.ZIP_DEFLATED) as new_PPT:
+            
+            for i in origin_PPT.infolist():
+                if key_f.search(i.filename)==None:
+                    new_PPT.writestr(i.filename,origin_PPT.read(i.filename))
+                else:
+                    if compress:
+                        origin_PPT.extract(i,tpf)
+                        NewVideo=Compress(os.path.join(tpf,i.filename))
+                        if NewVideo==None:
+                            new_PPT.writestr(i.filename,origin_PPT.read(i.filename))
+                        else:
+                            new_PPT.write(NewVideo,i.filename,compress_type=pyzipper.ZIP_DEFLATED)
+                    else:
+                        continue
+
+    except Exception as er :
+        #import traceback
+        print(Fore.YELLOW+Style.BRIGHT+f"[Warning] {o_name} is not a PPT file,Skip... or {er}")
+        print(Style.RESET_ALL)
+        #traceback.print_exc()
         return False
+    """
     b=[ key_f.search(file.filename)==None for file in f.filelist]
     p=[ key_f.search(file.filename)!=None for file in f.filelist]
     data=np.array(f.filelist)
@@ -84,17 +106,20 @@ def Process(path,O_dir,o_name,tpf):
         for file in n_data:
             f_new.write(f"{file}",f"{os.path.relpath(file,tpf)}")
     f_new.close()
+    """
     print(Fore.GREEN+Style.BRIGHT+f"[Info] {o_name} processed")
     print(Style.RESET_ALL)
     try:
+        os.rename(f"{O_dir}\\Processed_{o_name}.temp",f"{O_dir}\\Processed_{o_name}")
         shutil.rmtree(tpf)
         os.remove(path)
+        
     #----------
         
         print(Fore.GREEN+Style.BRIGHT+f"[Info] {tpf} removed")
         print(Style.RESET_ALL)
     except:
-        print(Fore.RED+Style.BRIGHT+f"[Error] {tpf}or{path} not removed")
+        print(Fore.RED+Style.BRIGHT+f"[Error] {tpf}  or  {path} not removed")
     return True
 
 def Compress(i_path):
@@ -132,6 +157,9 @@ def Compress(i_path):
         return None
     
     return i_path
+
+
+
 if os.path.isfile(path):
     tpf=tempfile.mkdtemp()
     Process(path,os.path.split(path)[0],os.path.split(path)[1],tpf)
